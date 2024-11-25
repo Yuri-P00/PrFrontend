@@ -2,78 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Videos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4682B4;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4682B4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #4169E1;
+        }
+    </style>
 </head>
 <body>
 
-
-    <h1>Videos</h1>
+    <h1>Videos Agregados</h1>
 
     <table id="videos_table">
         <thead>
-        <td>Cod.</td>
+            <tr>
+                <th>Cod.</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Duration</th>
+            </tr>
         </thead>
-
+        <tbody></tbody>
     </table>
 
+    <a href="../index.html">Inicio</a>
 
-    <a href="../index.html">
-        Inicio
-    </a>
-</body>
-</html>
+    <script>
+        find_all_videos();
 
+        function find_all_videos() {
+            console.log("Listing all videos:");
+            var xhttp = new XMLHttpRequest();
 
+            xhttp.open('GET', 'http://localhost:8080/videos', true);
 
-<script>
-
-    find_all_videos();
-    function find_all_videos(){
-        console.log("Listing all videos:");
-
-        var xhttp = new XMLHttpRequest();
-
-        xhttp.open('GET', 'http://localhost:8080/videos', true);
-
-        xhttp.onreadystatechange = function() {
-
-            if (xhttp.readyState === XMLHttpRequest.DONE) {
-                var status = xhttp.status;
-                if (status === 0 || (status >= 200 && status < 400)) {//NO hay errores
-                    var json = JSON.parse(xhttp.responseText);
-                    createTable(json, "videos_table");
-                } else {
-                    console.log("Error");
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState === XMLHttpRequest.DONE) {
+                    var status = xhttp.status;
+                    if (status === 0 || (status >= 200 && status < 400)) {
+                        var json = JSON.parse(xhttp.responseText);
+                        createTable(json, "videos_table");
+                    } else {
+                        console.log("Error");
+                    }
                 }
-            }
-        };
-        xhttp.send();
-    }
-
-    function createTable(json, table) {
-        var tableBody = document.getElementById(table);
-
-        var child = tableBody.childElementCount;
-        for ( let row = 1; row < child; row++ ) {
-            tableBody.deleteRow(child-row);
+            };
+            xhttp.send();
         }
 
-        // Populate table
-        json.forEach((row) => {
-            var tr = document.createElement("tr");
-            Object.values(row).forEach((cell) => {
+        function createTable(json, tableId) {
+            var tableBody = document.querySelector(`#${tableId} tbody`);
+            tableBody.innerHTML = '';
 
-                var td = document.createElement("td");
-                td.textContent = cell;
-                tr.appendChild(td);
-
+            json.forEach((row) => {
+                var tr = document.createElement("tr");
+                Object.values(row).forEach((cell) => {
+                    var td = document.createElement("td");
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
             });
+        }
+    </script>
 
-            tableBody.appendChild(tr);
-
-        });
-
-
-    }
-
-</script>
+</body>
+</html>
